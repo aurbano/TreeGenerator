@@ -32,7 +32,8 @@ var TreeGenerator = function (canvas, opts) {
 		autoSpawn: true, // Automatically create trees
 		spawnInterval: 250, // Spawn interval in ms
 		initialWidth: 10, // Initial branch width
-		indicateNewBranch: false // Display a visual indicator when a new branch is born
+		indicateNewBranch: false, // Display a visual indicator when a new branch is born
+		fitScreen: true // Resize canvas to fit screen
 	};
 
 	settings = $.extend(settings, opts);
@@ -48,8 +49,6 @@ var TreeGenerator = function (canvas, opts) {
 		canvasMinY: canvas.offset().top,
 		canvasMaxY: canvas.canvasMinY + canvas.HEIGHT
 	};
-
-	resizeCanvas();
 
 	var mouse = {
 		s: { // Mouse speed
@@ -167,12 +166,12 @@ var TreeGenerator = function (canvas, opts) {
 	 */
 	function circle(x, y, rad, color) {
 		// Circulo
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = color;
-		ctx.beginPath();
-		ctx.arc(x, y, rad, 0, Math.PI * 2, true);
-		ctx.closePath();
-		ctx.stroke();
+		canvas.ctx.lineWidth = 1;
+		canvas.ctx.strokeStyle = color;
+		canvas.ctx.beginPath();
+		canvas.ctx.arc(x, y, rad, 0, Math.PI * 2, true);
+		canvas.ctx.closePath();
+		canvas.ctx.stroke();
 	}
 
 	/**
@@ -224,7 +223,7 @@ var TreeGenerator = function (canvas, opts) {
 	 * Resize the canvas to fit the screen
 	 * @return {void}
 	 */
-	function resizeCanvas() {
+	tg.resizeCanvas = function () {
 		canvas.WIDTH = window.innerWidth;
 		canvas.HEIGHT = window.innerHeight;
 
@@ -232,6 +231,7 @@ var TreeGenerator = function (canvas, opts) {
 		canvas.$el.attr('height', canvas.HEIGHT);
 	}
 
+	if (settings.fitScreen) tg.resizeCanvas();
 
 	return tg;
 
