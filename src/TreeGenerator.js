@@ -84,15 +84,18 @@ var TreeGenerator = function (canvas, opts) {
 		// Clear intervals
 		tg.stop();
 		// Check autoSpawn
-		if (!tg.settings.autoSpawn) return;
-		// Start up
-		branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, '#fff');
-		intervals.generation = setInterval(function () {
-			branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
-		}, tg.settings.spawnInterval);
-		intervals.fading = setInterval(function () {
-			fade()
-		}, tg.settings.fadeInterval);
+		if (tg.settings.autoSpawn) {
+			branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, '#fff');
+			intervals.generation = setInterval(function () {
+				branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
+			}, tg.settings.spawnInterval);
+		}
+		// Check autoFade
+		if (tg.settings.fadeOut) {
+			intervals.fading = setInterval(function () {
+				fade()
+			}, tg.settings.fadeInterval);
+		}
 	};
 
 	/**

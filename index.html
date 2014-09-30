@@ -63,12 +63,15 @@
 				f2.add(tree.settings, 'fastMode');
 				f2.add(tree.settings, 'indicateNewBranch');
 			var f3 = gui.addFolder('Fading');
-				f3.add(tree.settings, 'fadeOut');
+				var fadeOut = f3.add(tree.settings, 'fadeOut');
 				f3.add(tree.settings, 'fadeAmount',0,0.3);
 
 			autoMode.onChange(function(val){
-				tree.stop();
-				if(val) tree.start();
+				tree.start();
+			});
+
+			fadeOut.onChange(function(val){
+				tree.start();
 			});
 			
 			autoInterval.onFinishChange(function(){
