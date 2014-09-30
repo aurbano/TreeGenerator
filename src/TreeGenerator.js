@@ -31,6 +31,7 @@ var TreeGenerator = function (canvas, opts) {
 		fadeAmount: 0.05, // How much per iteration
 		autoSpawn: true, // Automatically create trees
 		spawnInterval: 250, // Spawn interval in ms
+		fadeInterval: 250, // Fade interval in ms
 		initialWidth: 10, // Initial branch width
 		indicateNewBranch: false, // Display a visual indicator when a new branch is born
 		fitScreen: true // Resize canvas to fit screen
@@ -73,18 +74,25 @@ var TreeGenerator = function (canvas, opts) {
 	}
 
 	/**
-	 * Start generating trees
+	 * Start generating trees at the specified interval. If none is specified
+	 * it takes the default interval found in the settings (spawnInterval)
+	 * @param  {int} interval Spawn interval
+	 * @param  {int} fadeInterval Fade interval
 	 * @return {void}
 	 */
 	tg.start = function () {
+		// Clear intervals
+		tg.stop();
+		// Check autoSpawn
+		if (!tg.settings.autoSpawn) return;
 		// Start up
 		branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, '#fff');
 		intervals.generation = setInterval(function () {
 			branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
-		}, 50);
+		}, tg.settings.spawnInterval);
 		intervals.fading = setInterval(function () {
 			fade()
-		}, 250);
+		}, tg.settings.fadeInterval);
 	};
 
 	/**

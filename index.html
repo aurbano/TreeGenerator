@@ -66,6 +66,15 @@
 				f3.add(tree.settings, 'fadeOut');
 				f3.add(tree.settings, 'fadeAmount',0,0.3);
 
+			autoMode.onChange(function(val){
+				tree.stop();
+				if(val) tree.start();
+			});
+			
+			autoInterval.onFinishChange(function(){
+				tree.start();
+			});
+
 			gui.remember(tree);
 		});
 	</script>
