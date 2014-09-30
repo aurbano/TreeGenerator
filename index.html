@@ -34,8 +34,8 @@ body{
 <script type="text/javascript">
 	$(document).ready(function(){
 		var canvas = $('#bg');
-		TreeGenerator.init(canvas);
-		TreeGenerator.start();
+		var tree = new TreeGenerator(canvas);
+		tree.start();
 	});
 </script>
 </head>

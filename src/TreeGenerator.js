@@ -11,77 +11,61 @@
 /**
  * Documentation in the source code. Private methods are defined
  * as local functions, while exposed ones are members of the returned object tg.
- * @param  {Object} $ jQuery
- * @return {Object}   TreeGenerator instance
+ * @param {Object} canvas jQuery DOM object for the canvas element
+ * @param {Object} opts   Settings array, see default values and explanation below
  */
-var TreeGenerator = (function ($) {
-	var tg = {},
-		settings;
+var TreeGenerator = function (canvas, opts) {
+	var tg = {};
 
-	// Canvas variables
-	var ctx,
-		WIDTH,
-		HEIGHT,
-		canvasMinX,
-		canvasMaxX,
-		canvasMinY,
-		canvasMaxY,
-		rotation = 0,
-		// Mouse speed
-		ms = {
+	// Default settings
+	var settings = {
+		loss: 0.03, // Width loss per cycle
+		minSleep: 10, // Min sleep time (For the animation)
+		branchLoss: 0.8, // % width maintained for branches
+		mainLoss: 0.8, // % width maintained after branching
+		speed: 0.3, // Movement speed
+		newBranch: 0.8, // Chance of not starting a new branch 
+		colorful: false, // Use colors for new trees
+		fastMode: true, // Fast growth mode
+		fadeOut: true, // Fade slowly to black
+		fadeAmount: 0.05, // How much per iteration
+		autoSpawn: true, // Automatically create trees
+		spawnInterval: 250, // Spawn interval in ms
+		initialWidth: 10, // Initial branch width
+		indicateNewBranch: false // Display a visual indicator when a new branch is born
+	};
+
+	settings = $.extend(settings, opts);
+
+	// Initialize the canvas
+	var canvas = {
+		$el: canvas,
+		ctx: canvas[0].getContext("2d"),
+		WIDTH: canvas.width(),
+		HEIGHT: canvas.height(),
+		canvasMinX: canvas.offset().left,
+		canvasMaxX: canvas.canvasMinX + canvas.WIDTH,
+		canvasMinY: canvas.offset().top,
+		canvasMaxY: canvas.canvasMinY + canvas.HEIGHT
+	};
+
+	resizeCanvas();
+
+	var mouse = {
+		s: { // Mouse speed
 			x: 0,
 			y: 0
 		},
-		// Mouse position
-		mp = {
+		p: { // Mouse position
 			x: 0,
 			y: 0
-		};
+		}
+	}
 
 	// FPS counting system
 	var fps = 0,
 		now, lastUpdate = (new Date) * 1 - 1,
 		fpsFilter = 100;
-
-	/**
-	 * See the settings below for the defaults and the customization
-	 * options available
-	 * @param  {Object} opts Custom settings
-	 * @return {void}
-	 */
-	tg.init = function (canvas, opts) {
-		// Default settings
-		settings = {
-			loss: 0.03, // Width loss per cycle
-			minSleep: 10, // Min sleep time (For the animation)
-			branchLoss: 0.8, // % width maintained for branches
-			mainLoss: 0.8, // % width maintained after branching
-			speed: 0.3, // Movement speed
-			newBranch: 0.8, // Chance of not starting a new branch 
-			colorful: false, // Use colors for new trees
-			fastMode: false, // Fast growth mode
-			indicateNewBranch: false // Display a visual indicator when a new branch is born
-		};
-		settings = $.extend(settings, opts);
-
-		// Initialize the canvas
-		ctx = canvas[0].getContext("2d");
-
-		// Adapt canvas to window size
-		ctx.canvas.width = window.innerWidth;
-		ctx.canvas.height = window.innerHeight;
-
-		// Setup variables
-		WIDTH = $("#bg").width();
-		HEIGHT = $("#bg").height();
-		resizeCanvas();
-
-		canvasMinX = $("#bg").offset().left;
-		canvasMaxX = canvasMinX + WIDTH;
-
-		canvasMinY = $("#bg").offset().top;
-		canvasMaxY = canvasMinY + HEIGHT;
-	};
 
 	// Generation intervals
 	var intervals = {
@@ -95,9 +79,9 @@ var TreeGenerator = (function ($) {
 	 */
 	tg.start = function () {
 		// Start up
-		branch(WIDTH / 2, HEIGHT, 0, -3, 10, 0, '#fff');
+		branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, '#fff');
 		intervals.generation = setInterval(function () {
-			branch((Math.random() * 4) * WIDTH / 4, HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
+			branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
 		}, 50);
 		intervals.fading = setInterval(function () {
 			fade()
@@ -129,9 +113,9 @@ var TreeGenerator = (function ($) {
 	 * @return {void}
 	 */
 	function branch(x, y, dx, dy, w, growthRate, lifetime, branchColor) {
-		ctx.lineWidth = w - lifetime * settings.loss;
-		ctx.beginPath();
-		ctx.moveTo(x, y);
+		canvas.ctx.lineWidth = w - lifetime * settings.loss;
+		canvas.ctx.beginPath();
+		canvas.ctx.moveTo(x, y);
 		if (settings.fastMode) growthRate *= 0.5;
 		// Calculate new coords
 		x = x + dx;
@@ -140,20 +124,20 @@ var TreeGenerator = (function ($) {
 		dx = dx + Math.sin(Math.random() + lifetime) * settings.speed;
 		dy = dy + Math.cos(Math.random() + lifetime) * settings.speed;
 		// Check if branches are getting too low
-		if (w < 6 && y > HEIGHT - Math.random() * (0.3 * HEIGHT)) w = w * 0.8;
+		if (w < 6 && y > canvas.HEIGHT - Math.random() * (0.3 * canvas.HEIGHT)) w = w * 0.8;
 		// Draw the next segment of the branch
-		ctx.strokeStyle = branchColor;
-		ctx.lineTo(x, y);
-		ctx.stroke();
+		canvas.ctx.strokeStyle = branchColor;
+		canvas.ctx.lineTo(x, y);
+		canvas.ctx.stroke();
 		// Generate new branches
 		// they should spawn after a certain lifetime has been met, although depending on the width
-		if (lifetime > 5 * w + Math.random() * 100 && Math.random() > 0.8) {
+		if (lifetime > 5 * w + Math.random() * 100 && Math.random() > settings.newBranch) {
 			setTimeout(function () {
 				// Indicate the birth of a new branch
 				if (settings.indicateNewBranch) {
 					circle(x, y, w, 'rgba(255,0,0,0.4)');
 				}
-				branch(x, y, 2 * Math.sin(Math.random() + lifetime), 2 * Math.cos(Math.random() + lifetime), (w - lifetime * settings.loss) * settings.branchLoss, growthRate * Math.random() + 100 * Math.random(), 0, branchColor);
+				branch(x, y, 2 * Math.sin(Math.random() + lifetime), 2 * Math.cos(Math.random() + lifetime), (w - lifetime * settings.loss) * settings.branchLoss, growthRate + Math.random() * 100, 0, branchColor);
 				// When it branches, it looses a bit of width
 				w *= settings.mainLoss;
 			}, 2 * growthRate * Math.random() + settings.minSleep);
@@ -196,8 +180,9 @@ var TreeGenerator = (function ($) {
 	 * @return {void}
 	 */
 	function fade() {
-		ctx.fillStyle = "rgba(0,0,0,0.05)";
-		ctx.fillRect(0, 0, WIDTH, HEIGHT);
+		if (!settings.fadeOut) return true;
+		canvas.ctx.fillStyle = "rgba(0,0,0," + settings.fadeAmount + ")";
+		canvas.ctx.fillRect(0, 0, canvas.WIDTH, canvas.HEIGHT);
 	}
 
 	/**
@@ -206,19 +191,11 @@ var TreeGenerator = (function ($) {
 	 * @return {void}
 	 */
 	function resizeCanvas(e) {
-		WIDTH = window.innerWidth;
-		HEIGHT = window.innerHeight;
+		canvas.WIDTH = window.innerWidth;
+		canvas.HEIGHT = window.innerHeight;
 
-		$("#bg").attr('width', WIDTH);
-		$("#bg").attr('height', HEIGHT);
-	}
-
-	/**
-	 * Generate a random color from white to black
-	 * @return {String} Hex color
-	 */
-	function randColor() {
-		return Math.round(0xffffff * Math.random()).toString(16);
+		canvas.$el.attr('width', canvas.WIDTH);
+		canvas.$el.attr('height', canvas.HEIGHT);
 	}
 
 	/**
@@ -227,7 +204,7 @@ var TreeGenerator = (function ($) {
 	 */
 	function newColor() {
 		if (!settings.colorful) return '#fff';
-		return '#' + randColor();
+		return '#' + Math.round(0xffffff * Math.random()).toString(16);
 	}
 
 	/**
@@ -236,14 +213,26 @@ var TreeGenerator = (function ($) {
 	 * @return {void}
 	 */
 	function mouseMove(e) {
-		ms.x = Math.max(Math.min(e.pageX - mp.x, 40), -40);
-		ms.y = Math.max(Math.min(e.pageY - mp.y, 40), -40);
+		mouse.s.x = Math.max(Math.min(e.pageX - mouse.p.x, 40), -40);
+		mouse.s.y = Math.max(Math.min(e.pageY - mouse.p.y, 40), -40);
 
-		mp.x = e.pageX - canvasMinX;
-		mp.y = e.pageY - canvasMinY;
+		mouse.p.x = e.pageX - canvas.canvasMinX;
+		mouse.p.y = e.pageY - canvas.canvasMinY;
+	}
+
+	/**
+	 * Resize the canvas to fit the screen
+	 * @return {void}
+	 */
+	function resizeCanvas() {
+		canvas.WIDTH = window.innerWidth;
+		canvas.HEIGHT = window.innerHeight;
+
+		canvas.$el.attr('width', canvas.WIDTH);
+		canvas.$el.attr('height', canvas.HEIGHT);
 	}
 
 
 	return tg;
 
-}(jQuery));
+};
