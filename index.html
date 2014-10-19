@@ -43,7 +43,9 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			var canvas = $('#bg');
-			var tree = new TreeGenerator(canvas);
+			var tree = new TreeGenerator(canvas, {
+				fitScreen: true
+			});
 			tree.start();
 
 			// Setup dat gui to control variables

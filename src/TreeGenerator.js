@@ -34,7 +34,9 @@ var TreeGenerator = function (canvas, opts) {
 		fadeInterval: 250, // Fade interval in ms
 		initialWidth: 10, // Initial branch width
 		indicateNewBranch: false, // Display a visual indicator when a new branch is born
-		fitScreen: true // Resize canvas to fit screen
+		fitScreen: false, // Resize canvas to fit screen,
+		treeColor: '#ffffff',
+		bgColor: [0, 0, 0]
 	};
 
 	tg.settings = $.extend(tg.settings, opts);
@@ -69,7 +71,7 @@ var TreeGenerator = function (canvas, opts) {
 		tg.stop();
 		// Check autoSpawn
 		if (tg.settings.autoSpawn) {
-			branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, '#fff');
+			branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, tg.settings.treeColor);
 			intervals.generation = setInterval(function () {
 				branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
 			}, tg.settings.spawnInterval);
@@ -120,7 +122,7 @@ var TreeGenerator = function (canvas, opts) {
 		// Check if branches are getting too low
 		if (w < 6 && y > canvas.HEIGHT - Math.random() * (0.3 * canvas.HEIGHT)) w = w * 0.8;
 		// Draw the next segment of the branch
-		canvas.ctx.strokeStyle = branchColor;
+		canvas.ctx.strokeStyle = branchColor || tg.settings.treeColor;
 		canvas.ctx.lineTo(x, y);
 		canvas.ctx.stroke();
 		// Generate new branches
@@ -175,7 +177,7 @@ var TreeGenerator = function (canvas, opts) {
 	 */
 	function fade() {
 		if (!tg.settings.fadeOut) return true;
-		canvas.ctx.fillStyle = "rgba(0,0,0," + tg.settings.fadeAmount + ")";
+		canvas.ctx.fillStyle = "rgba(" + tg.settings.bgColor[0] + "," + tg.settings.bgColor[1] + "," + tg.settings.bgColor[2] + "," + tg.settings.fadeAmount + ")";
 		canvas.ctx.fillRect(0, 0, canvas.WIDTH, canvas.HEIGHT);
 	}
 
