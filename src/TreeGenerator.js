@@ -199,7 +199,7 @@ var TreeGenerator = function (canvas, opts) {
 	 * @return {String} HTML color
 	 */
 	function newColor() {
-		if (!tg.settings.colorful) return '#fff';
+		if (!tg.settings.colorful) return tg.settings.treeColor;
 		return '#' + Math.round(0xffffff * Math.random()).toString(16);
 	}
 
