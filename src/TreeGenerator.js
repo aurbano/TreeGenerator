@@ -71,9 +71,9 @@ var TreeGenerator = function (canvas, opts) {
 		tg.stop();
 		// Check autoSpawn
 		if (tg.settings.autoSpawn) {
-			branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, tg.settings.treeColor);
+			tg.branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, tg.settings.treeColor);
 			intervals.generation = setInterval(function () {
-				branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
+				tg.branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
 			}, tg.settings.spawnInterval);
 		}
 		// Check autoFade
@@ -108,7 +108,7 @@ var TreeGenerator = function (canvas, opts) {
 	 * @param  {String} branchColor Branch color
 	 * @return {void}
 	 */
-	function branch(x, y, dx, dy, w, growthRate, lifetime, branchColor) {
+	tg.branch = function (x, y, dx, dy, w, growthRate, lifetime, branchColor) {
 		canvas.ctx.lineWidth = w - lifetime * tg.settings.loss;
 		canvas.ctx.beginPath();
 		canvas.ctx.moveTo(x, y);
@@ -133,14 +133,14 @@ var TreeGenerator = function (canvas, opts) {
 				if (tg.settings.indicateNewBranch) {
 					circle(x, y, w, 'rgba(255,0,0,0.4)');
 				}
-				branch(x, y, 2 * Math.sin(Math.random() + lifetime), 2 * Math.cos(Math.random() + lifetime), (w - lifetime * tg.settings.loss) * tg.settings.branchLoss, growthRate + Math.random() * 100, 0, branchColor);
+				tg.branch(x, y, 2 * Math.sin(Math.random() + lifetime), 2 * Math.cos(Math.random() + lifetime), (w - lifetime * tg.settings.loss) * tg.settings.branchLoss, growthRate + Math.random() * 100, 0, branchColor);
 				// When it branches, it looses a bit of width
 				w *= tg.settings.mainLoss;
 			}, 2 * growthRate * Math.random() + tg.settings.minSleep);
 		}
 		// Continue the branch
 		if (w - lifetime * tg.settings.loss >= 1) setTimeout(function () {
-			branch(x, y, dx, dy, w, growthRate, ++lifetime, branchColor);
+			tg.branch(x, y, dx, dy, w, growthRate, ++lifetime, branchColor);
 		}, growthRate);
 	}
 
