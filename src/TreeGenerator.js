@@ -51,22 +51,6 @@ var TreeGenerator = function (canvas, opts) {
 		canvasMaxY: canvas.canvasMinY + canvas.HEIGHT
 	};
 
-	var mouse = {
-		s: { // Mouse speed
-			x: 0,
-			y: 0
-		},
-		p: { // Mouse position
-			x: 0,
-			y: 0
-		}
-	}
-
-	// FPS counting system
-	var fps = 0,
-		now, lastUpdate = (new Date) * 1 - 1,
-		fpsFilter = 100;
-
 	// Generation intervals
 	var intervals = {
 		generation: null,
@@ -215,19 +199,6 @@ var TreeGenerator = function (canvas, opts) {
 	function newColor() {
 		if (!tg.settings.colorful) return '#fff';
 		return '#' + Math.round(0xffffff * Math.random()).toString(16);
-	}
-
-	/**
-	 * Update the mouse position data
-	 * @param  {Object} e Event object
-	 * @return {void}
-	 */
-	function mouseMove(e) {
-		mouse.s.x = Math.max(Math.min(e.pageX - mouse.p.x, 40), -40);
-		mouse.s.y = Math.max(Math.min(e.pageY - mouse.p.y, 40), -40);
-
-		mouse.p.x = e.pageX - canvas.canvasMinX;
-		mouse.p.y = e.pageY - canvas.canvasMinY;
 	}
 
 	/**
