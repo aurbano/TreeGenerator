@@ -71,7 +71,7 @@ var TreeGenerator = function (canvas, opts) {
 		tg.stop();
 		// Check autoSpawn
 		if (tg.settings.autoSpawn) {
-			branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, tg.settings.treeColor);
+			branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 30, 0, tg.settings.treeColor);
 			intervals.generation = setInterval(function () {
 				branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
 			}, tg.settings.spawnInterval);
