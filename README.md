@@ -52,3 +52,5 @@ This project was done mainly for fun, and as such is lacking many features that 
 
 ###License
 TreeGenerator is released under the MIT license
+
+[![Analytics](https://ga-beacon.appspot.com/UA-3181088-16/TreeGenerator/readme)](https://github.com/aurbano)
