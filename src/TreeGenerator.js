@@ -24,7 +24,7 @@ var TreeGenerator = function (canvas, opts) {
 		branchLoss: 0.8, // % width maintained for branches
 		mainLoss: 0.8, // % width maintained after branching
 		speed: 0.3, // Movement speed
-		newBranch: 0.8, // Chance of not starting a new branch 
+		newBranch: 0.8, // Chance of not starting a new branch
 		colorful: false, // Use colors for new trees
 		fastMode: true, // Fast growth mode
 		fadeOut: true, // Fade slowly to black
@@ -73,7 +73,15 @@ var TreeGenerator = function (canvas, opts) {
 		if (tg.settings.autoSpawn) {
 			tg.branch(canvas.WIDTH / 2, canvas.HEIGHT, 0, -3, 10, 0, tg.settings.treeColor);
 			intervals.generation = setInterval(function () {
-				tg.branch((Math.random() * 4) * canvas.WIDTH / 4, canvas.HEIGHT, 0, -Math.random() * 3, 10 * Math.random(), 30, 0, newColor());
+				tg.branch(
+					(Math.random() * 4) * canvas.WIDTH / 4,
+					canvas.HEIGHT,
+					0,
+					-Math.random() * 3,
+					10 * Math.random(), 30,
+					0,
+					newColor()
+				);
 			}, tg.settings.spawnInterval);
 		}
 		// Check autoFade
@@ -218,5 +226,4 @@ var TreeGenerator = function (canvas, opts) {
 	if (tg.settings.fitScreen) tg.resizeCanvas();
 
 	return tg;
-
 };
