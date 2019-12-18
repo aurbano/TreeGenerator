@@ -47,10 +47,10 @@ fitScreen: true // Resize canvas to fit screen
 Try the dat.gui controls on the demo to find the optimal settings for you.
 
 
-###Contributing
+### Contributing
 This project was done mainly for fun, and as such is lacking many features that might be useful if someone actually wants to implement it seriously. If you do so, please feel free to contribute to the project.
 
-###License
+### License
 TreeGenerator is released under the MIT license
 
 [![Analytics](https://ga-beacon.appspot.com/UA-3181088-16/TreeGenerator/readme)](https://github.com/aurbano)
